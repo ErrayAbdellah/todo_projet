@@ -1,0 +1,24 @@
+server:
+  port: 8004
+  error:
+    include-message: always
+    include-binding-errors: always
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/todo
+    username: postgres
+    password: password
+  session:
+    store-type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: create-drop
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
