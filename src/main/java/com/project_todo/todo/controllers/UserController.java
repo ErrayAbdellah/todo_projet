@@ -5,15 +5,12 @@ import com.project_todo.todo.model.dto.UserDto;
 import com.project_todo.todo.model.entity.User;
 import com.project_todo.todo.services.IUserServices;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,7 +28,7 @@ public class UserController {
     public ResponseEntity signup(@RequestBody UserDto userDto){
         User users = User.toDto(userDto) ;
 
-        return services.singUp(users);
+        return services.singUp(userDto);
     }
     @GetMapping(value = "/log-out")
     public ResponseEntity logOut(HttpSession session){
@@ -41,9 +38,9 @@ public class UserController {
 
     @PostMapping(value = "/sign-in")
     public ResponseEntity signIn(@RequestBody UserDto userDto,HttpSession session){
-        User user = User.toDto(userDto);
+
        // System.out.println("hello");
-        return services.signIn(user,session);
+        return services.signIn(userDto,session);
         //return  null ;
     }
 
@@ -52,14 +49,13 @@ public class UserController {
         return services.getAllUsers() ;
     }
 
-    @PutMapping(value = "/edit/{id}")
-    public String edit(){
-        return null;
+    @PatchMapping
+    public ResponseEntity edit(HttpServletRequest request,@RequestBody UserDto userDto){
+        return services.edit(request,userDto);
     }
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity delete(@RequestBody UserDto userDto){
-        User user = User.toDto(userDto);
-        return services.delete(user);
+    @DeleteMapping
+    public ResponseEntity delete(HttpServletRequest request){
+        return services.delete(request);
     }
 
     @GetMapping("/excel")
@@ -74,11 +70,11 @@ public class UserController {
 
 
 
-    @PostMapping("/destroy")
-    public String destroySession(HttpSession session) {
-       session.setAttribute("name","yassin");
-        return "redirect:/";
-    }
+//    @PostMapping("/destroy")
+//    public String destroySession(HttpSession session) {
+//       session.setAttribute("name","yassin");
+//        return "redirect:/";
+//    }
 
     @PostMapping("/session")
     public void session(HttpSession  session){

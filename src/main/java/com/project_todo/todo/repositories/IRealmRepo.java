@@ -3,6 +3,8 @@ package com.project_todo.todo.repositories;
 
 import com.project_todo.todo.model.entity.Realm;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface RealmRepo extends JpaRepository<Realm,Long> {
+@Repository
+public interface IRealmRepo extends JpaRepository<Realm,Long> {
 }

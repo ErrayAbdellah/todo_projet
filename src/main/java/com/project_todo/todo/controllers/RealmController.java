@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 @RequestMapping(value = "/realm")
 public class RealmController {
 
-    public final IRealmServices services ;
+    private final IRealmServices services ;
     @GetMapping
     public RealmDto getRealm(){
 

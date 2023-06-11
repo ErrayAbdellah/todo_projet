@@ -3,7 +3,7 @@ package com.project_todo.todo.services;
 
 import com.project_todo.todo.model.dto.UserDto;
 import com.project_todo.todo.model.entity.User;
-import com.project_todo.todo.repositories.UserRepo;
+import com.project_todo.todo.repositories.IUserRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -23,20 +24,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServicesImpl implements IUserServices {
 
-    private final UserRepo userRepo ;
+    private final IUserRepo userRepo ;
 
-    public ResponseEntity signIn(User users , HttpSession session)  {
-
+    public ResponseEntity signIn(UserDto userDto , HttpSession session)  {
+        User user = User.toDto(userDto);
             BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
           try {
-                  if (userRepo.existsByEmail(users.getEmail().toLowerCase())){
-                      Optional<User> userFind = userRepo.findByEmail(users.getEmail().toLowerCase());
+                  if (userRepo.existsByEmail(user.getEmail().toLowerCase())){
+                      Optional<User> userFind = userRepo.findByEmail(user.getEmail().toLowerCase());
                       if(!userFind.isPresent()) {
                           return ResponseEntity.badRequest().body("repoUser is not present");
                       }
                       User dbUser = userFind.get();
 
-                      if (!bcrypt.matches(users.getPassword(),dbUser.getPassword())) {
+                      if (!bcrypt.matches(user.getPassword(),dbUser.getPassword())) {
                           return ResponseEntity.badRequest().body("check your password");
                       }
 
@@ -53,20 +54,20 @@ public class UserServicesImpl implements IUserServices {
 
     }
 
-    public ResponseEntity singUp(User users){
-
+    public ResponseEntity singUp(UserDto userDto){
+        User user = User.toDto(userDto);
         try{
-            if (userRepo.existsByEmail(users.getEmail().toLowerCase())){
+            if (userRepo.existsByEmail(user.getEmail().toLowerCase())){
                 return ResponseEntity.badRequest().body("déja exists ");
             }
-            else if(users.getPassword().length() < 8){
+            else if(user.getPassword().length() < 8){
                 return ResponseEntity.badRequest().body("error password > 8 ");
             }
             BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 
-            users.setPassword(bcrypt.encode(users.getPassword()));
-            users.setEmail(users.getEmail().toLowerCase());
-            userRepo.save(users);
+            user.setPassword(bcrypt.encode(user.getPassword()));
+            user.setEmail(user.getEmail().toLowerCase());
+            userRepo.save(user);
             return ResponseEntity.ok("singUp is successfully");
 
         }catch (Exception e){
@@ -89,24 +90,49 @@ public class UserServicesImpl implements IUserServices {
         return userDtoList;
     }
 
-    public User edit(User user){
-        User users = new User() ;
-        users.setLastName(user.getName());
-        users.setLastName(user.getLastName());
-        users.setPassword(user.getPassword());
-        userRepo.save(users);
+    public ResponseEntity edit(HttpServletRequest request ,UserDto userDto){
+        HttpSession session = request.getSession();
+        if (session.getAttribute("USER")==null){
+            return ResponseEntity.badRequest().body("authenticate !!");
+        }
+
+        try {
+            User user = (User) session.getAttribute("USER");
+            Optional<User> userDlt = userRepo.findById(user.getId());
+            User userDt = User.toDto(userDto);
+            User userData = userDlt.get() ;
+            userData.setName(userDt.getName());
+            userData.setLastName(userDt.getLastName());
+//            userData.setPassword(userDt.getPassword());
+            userRepo.save(userData);
+
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("error : "+e);
+        }
         return null ;
     }
 
     @Override
-    public ResponseEntity delete(User user) {
+    public ResponseEntity delete(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("USER")==null){
+            return ResponseEntity.badRequest().body("authenticate !!");
+        }
 
-        Optional<User> userDlt = userRepo.findById(user.getId());
+        try {
+            User user = (User) session.getAttribute("USER");
+            Optional<User> userDlt = userRepo.findById(user.getId());
+            if(userDlt.isEmpty()){
+                return ResponseEntity.badRequest().body("user not found");
+            }
+            User userDate = userDlt.get();
+            userDate.setSetDelated(true);
+            userRepo.save(userDate);
+            return ResponseEntity.ok("User deleted is successfully");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("error : "+e);
+        }
 
-        System.out.println(userDlt);
-
-
-        return null;
     }
 
     public void generateExcel(HttpServletResponse response) throws Exception {

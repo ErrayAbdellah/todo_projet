@@ -1,8 +1,5 @@
 package com.project_todo.todo.model.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project_todo.todo.model.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,14 +47,14 @@ public class User implements Serializable {
 
 //    @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
 //    private List<Backlog> backlogsList ;
-    @OneToMany(mappedBy = "users")
-    private List<Backlog> backlogsList;
-    @OneToMany(mappedBy = "users")
-    private List<Realm> realmList ;
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users",fetch = FetchType.EAGER)
     private List<Sprint> sprintList ;
     @OneToMany(mappedBy = "users")
     private List<UserStories> userStoriesList ;
+    @OneToMany(mappedBy = "users")
+    private List<Realm> realmList ;
+    @OneToMany(mappedBy = "users")
+    private List<Backlog> backlogsList;
 
     public static User toDto(UserDto userDto){
         return User.builder()

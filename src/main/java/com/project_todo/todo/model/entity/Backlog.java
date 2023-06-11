@@ -1,6 +1,8 @@
 package com.project_todo.todo.model.entity;
 
 
+import com.project_todo.todo.model.dto.BacklogDto;
+import com.project_todo.todo.model.dto.RealmDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,9 +34,17 @@ public class Backlog {
 
     @OneToMany(mappedBy = "backlog",cascade = CascadeType.ALL)
     private List<UserStories> userStoriesList ;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User users;
-
+    public static Backlog toDto(BacklogDto backlogDto){
+        return builder()
+                .id(backlogDto.getId())
+                .name(backlogDto.getName())
+                .users(User.builder().build())
+                .created_at(backlogDto.getCreated_at())
+                .updated_at(backlogDto.getUpdated_at())
+                .build();
+    }
 
 }
