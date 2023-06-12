@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,15 +20,25 @@ public class BacklogServicesImpl implements IBacklogServices{
     @Override
     public ResponseEntity add(HttpServletRequest request,BacklogDto backlogDto) {
         Backlog realm = Backlog.toDto(backlogDto);
-        String message ;
+        //String message ;
         HttpSession session = request.getSession();
         if (session.getAttribute("USER")==null){
             return ResponseEntity.badRequest().body("authenticate !!");
         }
+        try{
+            User user = (User) request.getSession().getAttribute("USER");
+            realm.setUsers(user);
+            repo.save(realm);
+            return ResponseEntity.ok("Backlog added successfully");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body ("Error : "+e);
+        }
+    }
 
-        User user = (User) request.getSession().getAttribute("USER");
-        realm.setUsers(user);
-        repo.save(realm);
-        return ResponseEntity.ok("Realm added successfully");
+    @Override
+    public List<Backlog> getbacklogs() {
+        List<Backlog> backlogs = repo.findAll();
+        System.out.println(backlogs);
+        return backlogs ;
     }
 }

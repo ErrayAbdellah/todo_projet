@@ -42,7 +42,6 @@ public class UserServicesImpl implements IUserServices {
                       }
 
                       session.setAttribute("USER",dbUser);
-
                       return ResponseEntity.ok("sign in ^_^ \n");
                   } else {
                       return ResponseEntity.badRequest().body("check your email");

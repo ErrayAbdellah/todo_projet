@@ -12,7 +12,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -55,6 +57,8 @@ public class User implements Serializable {
     private List<Realm> realmList ;
     @OneToMany(mappedBy = "users")
     private List<Backlog> backlogsList;
+//    @ManyToMany(mappedBy = "usersSprint")
+//    private Set<UserStories> userStories = new HashSet<>();
 
     public static User toDto(UserDto userDto){
         return User.builder()
