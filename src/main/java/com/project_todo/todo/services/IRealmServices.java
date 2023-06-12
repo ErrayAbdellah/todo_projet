@@ -7,6 +7,5 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletRequest;
 
 public interface IRealmServices {
-
     ResponseEntity addRealm(HttpServletRequest request, RealmDto realmDto);
 }

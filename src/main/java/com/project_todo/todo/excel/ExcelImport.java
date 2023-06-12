@@ -1,4 +1,4 @@
-package com.project_todo.todo;
+package com.project_todo.todo.excel;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.project_todo.todo.model.entity.User;
@@ -28,10 +28,7 @@ public class ExcelImport {
             DataFormatter dataFormatter = new DataFormatter();
             for (Row row: sheet) {
 
-
-
                 String name = row.getCell(0).getStringCellValue();
-
 
                 User user = new User();
 
@@ -44,9 +41,6 @@ public class ExcelImport {
             }
 
         }
-
-
-
         return null;
     }
 }

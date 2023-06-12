@@ -22,4 +22,6 @@ public interface IUserServices {
     void generateExcel(HttpServletResponse response) throws Exception;
 
     ResponseEntity logOut(HttpSession session);
+
+    List<User> listAll();
 }

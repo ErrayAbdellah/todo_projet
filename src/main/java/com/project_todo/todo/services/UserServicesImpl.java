@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -171,5 +172,11 @@ public class UserServicesImpl implements IUserServices {
         }catch (Exception e){
             return ResponseEntity.badRequest().body("error"+e);
         }
+    }
+
+    @Override
+    public List<User> listAll() {
+//        return userRepo.findAll(Sort.by("email").ascending());
+        return userRepo.findAll();
     }
 }
